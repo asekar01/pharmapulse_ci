@@ -3,7 +3,7 @@ PharmaPulse CI — Clinical Endpoint Efficacy Extractor
 =====================================================
 Rule-Based NLP pattern extraction engine for primary efficacy endpoints,
 quantitative effect sizes, hazard ratios, and statistical significance.
-100% Free & Local — Zero Paid APIs or Cloud Models.
+Direct Clinical Registry & Regulatory Label Parser.
 """
 
 import re

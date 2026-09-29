@@ -198,7 +198,7 @@ def run_server(port: int = PORT, open_browser: bool = True):
     print(f"\n=======================================================")
     print(f"  PharmaPulse CI is LIVE at: {url}")
     print(f"  Pivotal Intelligence & Commercial Forecasting Engine")
-    print(f"  Zero Cost | 100% Free Public APIs")
+    print(f"  Direct Regulatory & Clinical Registry Access")
     print(f"=======================================================\n")
 
     if open_browser:

@@ -3,7 +3,7 @@ PharmaPulse CI — Patent Cliff & Regulatory Exclusivity Tracker
 ==============================================================
 Extracts patent expiration dates, regulatory exclusivity terms (NCE, ODE, PED, BPCI),
 and calculates the commercial monopoly runway from FDA Orange Book & Purple Book standards.
-100% Free & Local — Zero Paid APIs.
+Official US FDA Regulatory Registry Connector.
 """
 
 import re
