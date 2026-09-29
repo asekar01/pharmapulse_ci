@@ -1,0 +1,22 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local SQLite Cache & Temp DBs
+pharmapulse_cache.db
+*.db
+*.sqlite3
+
+# Generated Excel dossiers & outputs
+*.xlsx
+*.csv
+*.pdf
+
+# Environment & IDE
+.env
+.venv/
+env/
+venv/
+.vscode/
+.idea/

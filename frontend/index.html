@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PharmaPulse CI — Clinical Intelligence & Forecasting Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<style>
+:root {
+  /* Clean Clinical Enterprise White Palette */
+  --bg: #f8fafc;
+  --bg-subtle: #f1f5f9;
+  --surface: #ffffff;
+  --b1: #e2e8f0;
+  --b2: #cbd5e1;
+
+  /* High-Contrast Standard Typography */
+  --t1: #0f172a;       /* Primary text - Slate 900 */
+  --t2: #334155;       /* Secondary body text - Slate 700 */
+  --t3: #64748b;       /* Muted / labels - Slate 500 */
+
+  /* Clinical Accents */
+  --blue: #1d4ed8;       /* Pharma Royal Blue */
+  --blue-subtle: #eff6ff;
+  --blue-border: #bfdbfe;
+
+  --red: #be123c;        /* Registrational Ruby */
+  --red-subtle: #fff1f2;
+  --red-border: #fecdd3;
+
+  --grn: #047857;        /* Live / Approved Emerald */
+  --grn-subtle: #ecfdf5;
+  --grn-border: #a7f3d0;
+
+  --amber: #b45309;      /* Milestones / Warnings */
+  --amber-subtle: #fffbeb;
+  --amber-border: #fde68a;
+
+  --r: 8px;
+  --rl: 12px;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  height: 100vh;
+  background: var(--bg);
+  color: var(--t1);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* TOPBAR */
+#topbar {
+  height: 64px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--b1);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 20px;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+  z-index: 50;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.brand-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #1d4ed8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+}
+.brand-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #0f172a;
+}
+.brand-title em {
+  color: var(--blue);
+  font-style: normal;
+}
+.brand-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--blue-subtle);
+  color: var(--blue);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--blue-border);
+  text-transform: uppercase;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 6px;
+  margin-left: 10px;
+}
+.nav-tab {
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--t2);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nav-tab:hover {
+  background: var(--bg-subtle);
+  color: var(--t1);
+}
+.nav-tab.active {
+  background: var(--blue-subtle);
+  border-color: var(--blue-border);
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.top-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--grn);
+  background: var(--grn-subtle);
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--grn-border);
+}
+.dot-live {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--grn);
+}
+
+.btn-brief {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #ffffff;
+  border: 1px solid var(--blue-border);
+  color: var(--blue);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-sm);
+}
+.btn-brief:hover:not(:disabled) {
+  background: var(--blue-subtle);
+  border-color: var(--blue);
+}
+.btn-brief:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-export {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  background: #047857;
+  border: 1px solid #065f46;
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-sm);
+}
+.btn-export:hover:not(:disabled) {
+  background: #065f46;
+  transform: translateY(-1px);
+}
+.btn-export:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* MAIN WORKSPACE */
+#workspace {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* SIDEBAR */
+#sidebar {
+  width: 320px;
+  background: #ffffff;
+  border-right: 1px solid var(--b1);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.side-sec-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--t3);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.side-sec-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 12px;
+  background: var(--blue);
+  border-radius: 2px;
+}
+
+.search-mode-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.mode-btn {
+  padding: 9px 12px;
+  border-radius: var(--r);
+  background: var(--bg-subtle);
+  border: 1px solid var(--b1);
+  color: var(--t2);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+.mode-btn:hover {
+  background: #e2e8f0;
+  color: var(--t1);
+}
+.mode-btn.active {
+  background: var(--blue-subtle);
+  border-color: var(--blue);
+  color: var(--blue);
+  font-weight: 700;
+}
+
+/* FILTER CHIPS */
+.chip-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: var(--r);
+  background: #ffffff;
+  border: 1px solid var(--b1);
+  color: var(--t2);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+  box-shadow: var(--shadow-sm);
+}
+.chip:hover {
+  background: var(--bg-subtle);
+  color: var(--t1);
+  border-color: var(--b2);
+}
+.chip.active-red {
+  background: var(--red-subtle);
+  border-color: var(--red);
+  color: var(--red);
+  font-weight: 700;
+}
+.chip.active-blue {
+  background: var(--blue-subtle);
+  border-color: var(--blue);
+  color: var(--blue);
+  font-weight: 700;
+}
+.chip.active-green {
+  background: var(--grn-subtle);
+  border-color: var(--grn);
+  color: var(--grn);
+  font-weight: 700;
+}
+.chip-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--bg-subtle);
+  color: var(--t3);
+  font-weight: 700;
+}
+
+.preset-pill {
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  background: #ffffff;
+  border: 1px solid var(--b1);
+  border-radius: var(--r);
+  color: var(--t2);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow-sm);
+}
+.preset-pill:hover {
+  background: var(--blue-subtle);
+  color: var(--blue);
+  border-color: var(--blue-border);
+  transform: translateX(2px);
+}
+
+/* CONTENT AREA */
+#content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* CONTROL STRIP (INPUTS) */
+#control-strip {
+  padding: 16px 28px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--b1);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.input-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.search-input-wrap {
+  flex: 1;
+  position: relative;
+}
+.search-input {
+  width: 100%;
+  height: 48px;
+  background: #ffffff;
+  border: 1px solid var(--b2);
+  border-radius: var(--r);
+  padding: 0 16px;
+  color: var(--t1);
+  font-size: 15px;
+  font-family: inherit;
+  font-weight: 500;
+  outline: none;
+  transition: all 0.15s ease;
+}
+.search-input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.15);
+}
+.search-input::placeholder {
+  color: var(--t3);
+  font-size: 14px;
+}
+
+.btn-primary {
+  height: 48px;
+  padding: 0 24px;
+  background: var(--blue);
+  border: none;
+  border-radius: var(--r);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-primary:hover {
+  background: #1e40af;
+  transform: translateY(-1px);
+}
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-toggle-compare {
+  height: 48px;
+  padding: 0 18px;
+  background: #ffffff;
+  border: 1px solid var(--amber-border);
+  border-radius: var(--r);
+  color: var(--amber);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-toggle-compare:hover {
+  background: var(--amber-subtle);
+}
+.btn-toggle-compare.active {
+  background: var(--amber-subtle);
+  border-color: var(--amber);
+  box-shadow: 0 0 0 2px rgba(180, 83, 9, 0.2);
+}
+
+/* COMPARE ROW */
+#compare-inputs {
+  display: none;
+  gap: 12px;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px dashed var(--b1);
+}
+#compare-inputs.show {
+  display: flex;
+}
+.comp-input {
+  flex: 1;
+  height: 44px;
+  background: #ffffff;
+  border: 1px solid var(--amber-border);
+  border-radius: var(--r);
+  padding: 0 16px;
+  color: var(--t1);
+  font-size: 14px;
+  outline: none;
+}
+.comp-input:focus {
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.15);
+}
+
+/* RESULTS VIEWPORT */
+#results-viewport {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px;
+}
+
+/* TABS CONTAINER */
+.tab-panel {
+  display: none;
+}
+.tab-panel.active {
+  display: block;
+}
+
+/* KPI CARDS */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.kpi-card {
+  background: #ffffff;
+  border: 1px solid var(--b1);
+  border-radius: var(--rl);
+  padding: 18px 20px;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease;
+}
+.kpi-card:hover {
+  border-color: var(--b2);
+  box-shadow: var(--shadow-md);
+}
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 3px;
+  background: var(--kpi-bar, var(--blue));
+}
+.kpi-val {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--t1);
+  margin-bottom: 4px;
+  letter-spacing: -0.5px;
+}
+.kpi-lbl {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--t2);
+}
+.kpi-sub {
+  font-size: 12px;
+  color: var(--t3);
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+/* PATENT RADAR CARD */
+.patent-card {
+  background: #ffffff;
+  border: 1px solid var(--b1);
+  border-radius: var(--rl);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+  border-top: 3px solid var(--blue);
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  align-items: center;
+}
+.patent-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--t1);
+  margin-bottom: 8px;
+}
+.patent-sub {
+  font-size: 14px;
+  color: var(--t2);
+  margin-bottom: 4px;
+}
+.patent-runway-badge {
+  text-align: right;
+  background: var(--blue-subtle);
+  border: 1px solid var(--blue-border);
+  border-radius: 8px;
+  padding: 14px 18px;
+}
+.patent-runway-val {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--blue);
+}
+
+/* TRIAL CARDS */
+.trials-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.trial-card {
+  background: #ffffff;
+  border: 1px solid var(--b1);
+  border-radius: var(--rl);
+  padding: 20px 22px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease;
+}
+.trial-card:hover {
+  border-color: var(--b2);
+  box-shadow: var(--shadow-md);
+}
+.trial-card.is-pivotal {
+  border-left: 4px solid var(--red);
+}
+
+.tc-hdr {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.tc-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--t1);
+  line-height: 1.45;
+  cursor: pointer;
+}
+.tc-title:hover {
+  color: var(--blue);
+}
+.tc-nct {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue);
+  background: var(--blue-subtle);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--blue-border);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.badge-pivotal {
+  background: var(--red-subtle);
+  color: var(--red);
+  border: 1px solid var(--red-border);
+}
+.badge-phase {
+  background: var(--blue-subtle);
+  color: var(--blue);
+  border: 1px solid var(--blue-border);
+}
+.badge-status {
+  background: var(--grn-subtle);
+  color: var(--grn);
+  border: 1px solid var(--grn-border);
+}
+.badge-other {
+  background: var(--bg-subtle);
+  color: var(--t2);
+  border: 1px solid var(--b1);
+}
+
+.tc-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px 20px;
+  margin-bottom: 14px;
+  background: var(--bg-subtle);
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--b1);
+}
+.tc-meta-k {
+  color: var(--t3);
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.tc-meta-v {
+  color: var(--t1);
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.tc-accordion {
+  border-top: 1px solid var(--b1);
+  padding-top: 16px;
+  margin-top: 14px;
+  display: none;
+}
+.tc-accordion.open {
+  display: block;
+}
+.tc-section-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--blue);
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+.tc-section-body {
+  color: var(--t2);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.btn-details {
+  background: var(--bg-subtle);
+  border: 1px solid var(--b1);
+  color: var(--blue);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 6px 14px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-details:hover {
+  background: var(--blue-subtle);
+}
+
+/* FDA DOSSIER TAB */
+.fda-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+.panel-box {
+  background: #ffffff;
+  border: 1px solid var(--b1);
+  border-radius: var(--rl);
+  padding: 22px 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+.panel-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--t1);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.black-box-warning {
+  background: var(--red-subtle);
+  border: 1px solid var(--red-border);
+  border-radius: var(--r);
+  padding: 16px 18px;
+  margin-bottom: 20px;
+}
+.bbw-hdr {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--red);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bbw-body {
+  font-size: 14px;
+  color: #9f1239;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+/* FORECASTING TIMELINES */
+.fc-summary-hero {
+  background: linear-gradient(135deg, #eff6ff 0%, #ecfdf5 100%);
+  border: 1px solid #bfdbfe;
+  border-radius: var(--rl);
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-sm);
+}
+.fc-hero-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--t1);
+  margin-bottom: 4px;
+}
+.fc-hero-sub {
+  font-size: 14px;
+  color: var(--t2);
+  font-weight: 500;
+}
+.fc-hero-launch-badge {
+  text-align: right;
+  background: #ffffff;
+  padding: 12px 20px;
+  border-radius: var(--r);
+  border: 1px solid var(--grn-border);
+}
+.fc-hero-launch-tag {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--grn);
+  letter-spacing: 1px;
+  font-weight: 800;
+}
+.fc-hero-launch-val {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--grn);
+}
+
+.timeline-card {
+  background: #ffffff;
+  border: 1px solid var(--b1);
+  border-radius: var(--rl);
+  padding: 24px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow-sm);
+}
+.tl-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.tl-nct-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--blue);
+  background: var(--blue-subtle);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--blue-border);
+  font-weight: 700;
+}
+.tl-study-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--t1);
+  margin-left: 12px;
+}
+.tl-horizon-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: var(--amber-subtle);
+  color: var(--amber);
+  border: 1px solid var(--amber-border);
+}
+
+/* 5-STEP ROADMAP TRACK */
+.tl-track-container {
+  position: relative;
+  margin: 30px 20px 10px;
+}
+.tl-track-line {
+  position: absolute;
+  top: 19px;
+  left: 40px;
+  right: 40px;
+  height: 3px;
+  background: var(--b1);
+  border-radius: 2px;
+  z-index: 1;
+}
+.tl-track-steps {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+}
+.tl-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 140px;
+}
+.tl-step-node {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid var(--b2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--t3);
+  margin-bottom: 8px;
+  box-shadow: var(--shadow-sm);
+}
+.tl-step.done .tl-step-node {
+  background: var(--grn);
+  border-color: #047857;
+  color: #ffffff;
+}
+.tl-step.active .tl-step-node {
+  background: var(--blue);
+  border-color: #1e40af;
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.2);
+}
+.tl-step.launch .tl-step-node {
+  background: #047857;
+  border-color: #065f46;
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.2);
+}
+.tl-step-lbl {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+}
+.tl-step-date {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--t1);
+}
+.tl-step.launch .tl-step-date {
+  color: var(--grn);
+  font-weight: 800;
+}
+
+/* COMPETITOR MATRIX */
+.comp-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  border-radius: var(--rl);
+  overflow: hidden;
+  border: 1px solid var(--b1);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 28px;
+}
+.comp-table th, .comp-table td {
+  padding: 16px 20px;
+  text-align: left;
+  border-bottom: 1px solid var(--b1);
+}
+.comp-table th {
+  background: var(--bg-subtle);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--t2);
+  font-weight: 700;
+}
+.comp-table tr:last-child td { border-bottom: none; }
+.comp-table tr:hover td {
+  background: #f8fafc;
+}
+.comp-advantage {
+  color: var(--grn);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* PUBMED TAB */
+.paper-item {
+  background: #ffffff;
+  border: 1px solid var(--b1);
+  border-radius: var(--r);
+  padding: 18px 20px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.paper-item:hover {
+  border-color: var(--b2);
+  box-shadow: var(--shadow-md);
+}
+.paper-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.paper-journal {
+  font-size: 13px;
+  color: var(--blue);
+  font-weight: 700;
+}
+.badge-hi {
+  background: var(--amber-subtle);
+  color: var(--amber);
+  border: 1px solid var(--amber-border);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 6px;
+}
+
+/* EMPTY / LOADING */
+.loading-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60%;
+  gap: 16px;
+}
+.pulse-bar {
+  width: 260px;
+  height: 4px;
+  background: var(--b1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.pulse-fill {
+  height: 100%;
+  width: 45%;
+  background: var(--blue);
+  animation: move-pulse 1.2s infinite ease-in-out;
+  border-radius: 4px;
+}
+@keyframes move-pulse {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(350%); }
+}
+.empty-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60%;
+  color: var(--t3);
+  text-align: center;
+  gap: 12px;
+}
+.empty-icon { font-size: 48px; opacity: 0.6; }
+.empty-text { font-size: 17px; color: var(--t1); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header id="topbar">
+  <div class="brand">
+    <div class="brand-icon">⚡</div>
+    <div class="brand-title">Pharma<em>Pulse</em> CI</div>
+    <span class="brand-tag">Terminal</span>
+  </div>
+
+  <nav class="nav-tabs">
+    <button class="nav-tab active" data-tab="tab-pipeline">🔬 Clinical Pipeline</button>
+    <button class="nav-tab" data-tab="tab-fda">🏛 FDA Regulatory & Patents</button>
+    <button class="nav-tab" data-tab="tab-pubmed">📚 PubMed Evidence</button>
+    <button class="nav-tab" data-tab="tab-forecasting">📈 Forecasting Timelines</button>
+    <button class="nav-tab" data-tab="tab-compare" id="btn-tab-compare" style="display:none;">⚔ Head-to-Head Matrix</button>
+  </nav>
+
+  <div class="top-actions">
+    <div class="status-pill">
+      <div class="dot-live"></div>
+      <span id="api-status-label">Live Radar Active</span>
+    </div>
+    <button class="btn-brief" id="btn-pdf-brief" disabled onclick="exportExecutivePDF()">
+      📄 Executive PDF Brief
+    </button>
+    <button class="btn-export" id="btn-export" disabled onclick="downloadExcel()">
+      ⬇ Export Intelligence (.xlsx)
+    </button>
+  </div>
+</header>
+
+<div id="workspace">
+  <!-- SIDEBAR CONTROLS -->
+  <aside id="sidebar">
+    <div>
+      <div class="side-sec-title">Search Scope</div>
+      <div class="search-mode-grid">
+        <button class="mode-btn active" data-mode="intervention">Drug / Intr</button>
+        <button class="mode-btn" data-mode="condition">Indication</button>
+        <button class="mode-btn" data-mode="sponsor">Sponsor</button>
+        <button class="mode-btn" data-mode="nct">NCT ID</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="side-sec-title">Guided Filters (Style B)</div>
+      <div class="chip-group">
+        <div class="chip" id="chip-pivotal" onclick="toggleChip('pivotal')">
+          <span>★ Pivotal Registrational</span>
+          <span class="chip-badge">Scored</span>
+        </div>
+        <div class="chip" id="chip-phase3" onclick="toggleChip('phase3')">
+          <span>Phase 3 Studies</span>
+          <span class="chip-badge">Ph 3</span>
+        </div>
+        <div class="chip" id="chip-recruiting" onclick="toggleChip('recruiting')">
+          <span>Actively Recruiting</span>
+          <span class="chip-badge">Live</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="side-sec-title">Blockbuster Presets</div>
+      <button class="preset-pill" onclick="quickSearch('Semaglutide')">✦ Semaglutide (Ozempic/Wegovy)</button>
+      <button class="preset-pill" onclick="quickSearch('Tirzepatide')">✦ Tirzepatide (Mounjaro/Zepbound)</button>
+      <button class="preset-pill" onclick="quickSearch('Pembrolizumab')">✦ Pembrolizumab (Keytruda)</button>
+      <button class="preset-pill" onclick="quickSearch('Dupilumab')">✦ Dupilumab (Dupixent)</button>
+      <button class="preset-pill" onclick="quickSearch('Nivolumab')">✦ Nivolumab (Opdivo)</button>
+    </div>
+
+    <div style="margin-top:auto; font-size:12px; color:var(--t3); line-height:1.6; background:var(--bg-subtle); padding:14px; border-radius:8px; border:1px solid var(--b1);">
+      <b style="color:var(--t1);">PharmaPulse CI Engine</b><br>
+      Triangulates ClinicalTrials.gov v2, openFDA, Orange Book, and NCBI PubMed.<br>
+      <span style="color:var(--grn); font-weight:700;">100% Free &middot; ₹0 Cost Forever</span>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main id="content">
+    <!-- SEARCH & CONTROLS STRIP -->
+    <div id="control-strip">
+      <div class="input-row">
+        <div class="search-input-wrap">
+          <input type="text" id="main-search-input" class="search-input" placeholder="Enter drug name e.g. Semaglutide, Keytruda, Tirzepatide..." />
+        </div>
+        <button class="btn-toggle-compare" id="btn-toggle-compare" onclick="toggleCompareMode()">
+          ⚔ Compare Competitor
+        </button>
+        <button class="btn-primary" id="btn-execute" onclick="executeCurrentMode()">
+          Search Intelligence →
+        </button>
+      </div>
+
+      <!-- COMPETITOR INPUTS -->
+      <div id="compare-inputs">
+        <input type="text" id="comp-drug-a" class="comp-input" placeholder="Primary Drug (e.g. Wegovy)" />
+        <span style="color:var(--amber); font-weight:800; font-size:13px;">VS.</span>
+        <input type="text" id="comp-drug-b" class="comp-input" placeholder="Competitor Drug (e.g. Zepbound)" />
+        <button class="btn-primary" style="background:var(--amber); color:#fff;" onclick="executeComparison()">
+          Run Head-to-Head Matrix →
+        </button>
+      </div>
+    </div>
+
+    <!-- RESULTS VIEWPORT -->
+    <div id="results-viewport">
+      <div id="empty-state" class="empty-view">
+        <div class="empty-icon">🔬</div>
+        <div class="empty-text">Search any drug to load clinical trials, FDA approvals, and forecasting timelines.</div>
+        <div style="font-size:14px; max-width:460px; line-height:1.6; color:var(--t2);">
+          Try clicking <b>✦ Semaglutide</b> on the sidebar, or use <b>⚔ Compare Competitor</b> to evaluate two competing drugs head-to-head.
+        </div>
+      </div>
+
+      <div id="loading-state" class="loading-view" style="display:none;">
+        <div class="pulse-bar"><div class="pulse-fill"></div></div>
+        <div id="loading-label" style="font-size:14px; color:var(--t2); font-weight:600;">Synthesizing multi-source intelligence...</div>
+      </div>
+
+      <!-- TAB 1: CLINICAL PIPELINE -->
+      <section id="tab-pipeline" class="tab-panel">
+        <div class="kpi-grid" id="pipeline-kpi-grid"></div>
+        <div class="trials-list" id="trials-container"></div>
+      </section>
+
+      <!-- TAB 2: FDA REGULATORY & PATENTS -->
+      <section id="tab-fda" class="tab-panel">
+        <div id="patent-radar-container"></div>
+        <div id="fda-container"></div>
+      </section>
+
+      <!-- TAB 3: PUBMED EVIDENCE -->
+      <section id="tab-pubmed" class="tab-panel">
+        <div id="pubmed-container"></div>
+      </section>
+
+      <!-- TAB 4: FORECASTING TIMELINES -->
+      <section id="tab-forecasting" class="tab-panel">
+        <div id="forecasting-container"></div>
+      </section>
+
+      <!-- TAB 5: COMPETITOR MATRIX -->
+      <section id="tab-compare" class="tab-panel">
+        <div id="compare-container"></div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+// State Management
+let currentDrug = "";
+let searchMode = "intervention";
+let filterPivotal = false;
+let filterPhase3 = false;
+let filterRecruiting = false;
+let isCompareMode = false;
+let activeDossier = null;
+
+// Tab Switching
+document.querySelectorAll('.nav-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    const tabId = btn.getAttribute('data-tab');
+    document.getElementById(tabId).classList.add('active');
+  });
+});
+
+// Search Mode Selection
+document.querySelectorAll('.mode-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    searchMode = btn.getAttribute('data-mode');
+    const phMap = {
+      intervention: "Enter drug name e.g. Semaglutide, Pembrolizumab...",
+      condition: "Enter disease indication e.g. Lung Cancer, Psoriasis...",
+      sponsor: "Enter sponsor e.g. Novo Nordisk, Merck, Pfizer...",
+      nct: "Enter NCT ID e.g. NCT04280705..."
+    };
+    document.getElementById('main-search-input').placeholder = phMap[searchMode] || "Enter query...";
+  });
+});
+
+// Guided Filter Chips
+function toggleChip(type) {
+  if (type === 'pivotal') {
+    filterPivotal = !filterPivotal;
+    document.getElementById('chip-pivotal').classList.toggle('active-red', filterPivotal);
+  } else if (type === 'phase3') {
+    filterPhase3 = !filterPhase3;
+    document.getElementById('chip-phase3').classList.toggle('active-blue', filterPhase3);
+  } else if (type === 'recruiting') {
+    filterRecruiting = !filterRecruiting;
+    document.getElementById('chip-recruiting').classList.toggle('active-green', filterRecruiting);
+  }
+  if (currentDrug && !isCompareMode && activeDossier) {
+    renderPipeline(activeDossier);
+  }
+}
+
+function quickSearch(drug) {
+  document.getElementById('main-search-input').value = drug;
+  currentDrug = drug;
+  if (isCompareMode) toggleCompareMode();
+  executeSearch();
+}
+
+function toggleCompareMode() {
+  isCompareMode = !isCompareMode;
+  const btn = document.getElementById('btn-toggle-compare');
+  const cmpRow = document.getElementById('compare-inputs');
+  const mainInput = document.getElementById('main-search-input');
+  btn.classList.toggle('active', isCompareMode);
+  cmpRow.classList.toggle('show', isCompareMode);
+  if (isCompareMode) {
+    document.getElementById('comp-drug-a').value = mainInput.value.trim();
+  }
+}
+
+function executeCurrentMode() {
+  if (isCompareMode) {
+    executeComparison();
+  } else {
+    executeSearch();
+  }
+}
+
+// Enter Key triggers
+document.getElementById('main-search-input').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') executeCurrentMode();
+});
+
+// Main Search & Dossier Synthesis
+async function executeSearch() {
+  const query = document.getElementById('main-search-input').value.trim();
+  if (!query) return;
+  currentDrug = query;
+
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('loading-state').style.display = 'flex';
+  document.getElementById('loading-label').textContent = `Querying ClinicalTrials.gov, openFDA, Orange Book, and PubMed for ${query}...`;
+  document.getElementById('btn-export').disabled = true;
+  document.getElementById('btn-pdf-brief').disabled = true;
+
+  try {
+    const res = await fetch(`/api/dossier?drug=${encodeURIComponent(query)}`);
+    const dossier = await res.json();
+    activeDossier = dossier;
+
+    renderPipeline(dossier);
+    renderPatentRadar(dossier.patent);
+    renderFDA(dossier.fda);
+    renderPubMed(dossier.pubmed);
+    renderForecasting(dossier.forecasting);
+
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('tab-pipeline').classList.add('active');
+    document.getElementById('btn-export').disabled = false;
+    document.getElementById('btn-pdf-brief').disabled = false;
+  } catch (e) {
+    document.getElementById('loading-state').style.display = 'none';
+    alert("Error fetching intelligence: " + e.message);
+  }
+}
+
+// Render Pipeline
+function renderPipeline(dossier) {
+  const stats = dossier.stats || {};
+  let trials = dossier.trials || [];
+
+  if (filterPivotal) trials = trials.filter(t => t.is_pivotal);
+  if (filterPhase3) trials = trials.filter(t => (t.phase || "").includes("Phase 3") || (t.phase || "").includes("Phase 2/3"));
+  if (filterRecruiting) trials = trials.filter(t => (t.status || "").toUpperCase().includes("RECRUIT"));
+
+  // KPI Grid
+  const kpiEl = document.getElementById('pipeline-kpi-grid');
+  kpiEl.innerHTML = `
+    <div class="kpi-card" style="--kpi-bar: var(--blue);">
+      <div class="kpi-val">${stats.total_trials || trials.length}</div>
+      <div class="kpi-lbl">Total Registered Trials</div>
+      <div class="kpi-sub">ClinicalTrials.gov v2 Registry</div>
+    </div>
+    <div class="kpi-card" style="--kpi-bar: var(--red);">
+      <div class="kpi-val" style="color:var(--red);">${stats.pivotal_trials || 0}</div>
+      <div class="kpi-lbl">Pivotal Registrational Studies</div>
+      <div class="kpi-sub">${stats.pivotal_percentage || 0}% of pipeline</div>
+    </div>
+    <div class="kpi-card" style="--kpi-bar: #0284c7;">
+      <div class="kpi-val" style="color:#0284c7;">${(stats.total_enrolled || 0).toLocaleString()}</div>
+      <div class="kpi-lbl">Enrolled Clinical Patients</div>
+      <div class="kpi-sub">Aggregated sample size</div>
+    </div>
+    <div class="kpi-card" style="--kpi-bar: var(--grn);">
+      <div class="kpi-val" style="color:var(--grn);">${stats.recruiting_trials || 0}</div>
+      <div class="kpi-lbl">Actively Recruiting Studies</div>
+      <div class="kpi-sub">${stats.recruiting_percentage || 0}% active sites</div>
+    </div>
+  `;
+
+  // Trials List
+  const listEl = document.getElementById('trials-container');
+  if (!trials.length) {
+    listEl.innerHTML = `<div style="text-align:center; padding:40px; color:var(--t3); background:#ffffff; border-radius:var(--rl); border:1px solid var(--b1); font-size:15px;">No trials matching active filters.</div>`;
+    return;
+  }
+
+  listEl.innerHTML = trials.map((t, idx) => {
+    const isPiv = t.is_pivotal;
+    const reasons = (t.pivotal_reasons || []).join(' &bull; ');
+    return `
+      <div class="trial-card ${isPiv ? 'is-pivotal' : ''}">
+        <div class="tc-hdr">
+          <div class="tc-title" onclick="toggleDetails(${idx})">${t.title}</div>
+          <a href="${t.url}" target="_blank" class="tc-nct">${t.nct_id} ↗</a>
+        </div>
+
+        <div class="badge-row">
+          ${isPiv ? `<span class="badge badge-pivotal" title="${reasons}">★ Pivotal Registrational (Score: ${t.pivotal_score})</span>` : ''}
+          <span class="badge badge-phase">${t.phase}</span>
+          <span class="badge badge-status">${t.status}</span>
+          ${t.enrollment ? `<span class="badge badge-other">${t.enrollment.toLocaleString()} patients</span>` : ''}
+          <span class="badge badge-other">${t.sponsor}</span>
+        </div>
+
+        <div class="tc-meta-grid">
+          <div class="tc-meta-item">
+            <span class="tc-meta-k">Primary Completion Date</span>
+            <span class="tc-meta-v">${t.primary_completion_date || 'Not Disclosed'}</span>
+          </div>
+          <div class="tc-meta-item">
+            <span class="tc-meta-k">Study Design</span>
+            <span class="tc-meta-v">${t.study_type} (${t.allocation || 'Allocation N/A'})</span>
+          </div>
+          <div class="tc-meta-item">
+            <span class="tc-meta-k">Masking</span>
+            <span class="tc-meta-v">${t.masking || 'Not Disclosed'}</span>
+          </div>
+        </div>
+
+        <button class="btn-details" onclick="toggleDetails(${idx})">
+          <span id="det-lbl-${idx}">View Endpoints & Details ▼</span>
+        </button>
+
+        <div class="tc-accordion" id="acc-${idx}">
+          <div class="tc-section-title">Primary Outcome Endpoints</div>
+          <div class="tc-section-body">${(t.primary_outcomes || []).join('<br>') || 'No primary outcome measures reported.'}</div>
+
+          <div class="tc-section-title">Interventions & Regimens</div>
+          <div class="tc-section-body">${(t.interventions || []).join('; ') || 'Not reported.'}</div>
+
+          <div class="tc-section-title">Conditions / Indications</div>
+          <div class="tc-section-body">${(t.conditions || []).join(', ') || 'Not reported.'}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleDetails(idx) {
+  const acc = document.getElementById(`acc-${idx}`);
+  const lbl = document.getElementById(`det-lbl-${idx}`);
+  if (!acc) return;
+  const isOpen = acc.classList.contains('open');
+  acc.classList.toggle('open', !isOpen);
+  lbl.textContent = isOpen ? 'View Endpoints & Details ▼' : 'Hide Endpoints ▲';
+}
+
+// Render Patent & Exclusivity Radar
+function renderPatentRadar(patent) {
+  const container = document.getElementById('patent-radar-container');
+  if (!patent) {
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="patent-card">
+      <div>
+        <div class="patent-title">
+          🛡 Patent Cliff & Regulatory Exclusivity Radar (FDA Orange Book)
+        </div>
+        <div style="font-size:15px; font-weight:700; color:var(--blue); margin-bottom:4px;">
+          Primary Substance Patent: ${patent.primary_patent}
+        </div>
+        <div class="patent-sub">
+          Patent Expiry Date: <b>${patent.patent_expiry_formatted}</b> &bull; Secondary/Formulation: <b>${patent.formulation_expiry_date}</b>
+        </div>
+        <div style="font-size:13px; color:var(--t3);">
+          Regulatory Exclusivity: <b>${patent.exclusivity_type}</b> &bull; Holder: <b>${patent.patent_assignee}</b>
+        </div>
+      </div>
+
+      <div class="patent-runway-badge">
+        <div style="font-size:11px; font-weight:700; text-transform:uppercase; color:var(--t3);">Commercial Runway</div>
+        <div class="patent-runway-val">${patent.runway_years} Years</div>
+        <div style="font-size:12px; color:var(--t2); font-weight:600;">${patent.status_label}</div>
+      </div>
+    </div>
+  `;
+}
+
+// Render FDA Tab
+function renderFDA(fda) {
+  const container = document.getElementById('fda-container');
+  if (!fda || !fda.label || !fda.label.found) {
+    container.innerHTML = `
+      <div class="panel-box">
+        <div class="panel-title">🏛 FDA Regulatory Status</div>
+        <div style="color:var(--amber); font-size:15px; font-weight:700;">Investigational / Not Approved in US (No official FDA label found for this exact brand).</div>
+      </div>
+    `;
+    return;
+  }
+
+  const lbl = fda.label;
+  const safety = fda.safety || {};
+
+  container.innerHTML = `
+    <div class="fda-grid">
+      <div>
+        ${lbl.has_boxed_warning ? `
+          <div class="black-box-warning">
+            <div class="bbw-hdr">⚠ FDA Boxed Warning (Black Box Warning)</div>
+            <div class="bbw-body">${lbl.boxed_warning}</div>
+          </div>
+        ` : ''}
+
+        <div class="panel-box">
+          <div class="panel-title">Approved Indications & Clinical Usage</div>
+          <div style="color:var(--t2); line-height:1.7; white-space:pre-line; font-size:14px;">
+            ${lbl.indications_and_usage || 'No indication text reported.'}
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="panel-box">
+          <div class="panel-title">Regulatory Dossier</div>
+          <div style="display:flex; flex-direction:column; gap:12px; font-size:14px;">
+            <div><span style="color:var(--t3);">Brand Name:</span> <b>${lbl.brand_name}</b></div>
+            <div><span style="color:var(--t3);">Generic Name:</span> <b>${lbl.generic_name}</b></div>
+            <div><span style="color:var(--t3);">Manufacturer:</span> <b>${lbl.manufacturer}</b></div>
+            <div><span style="color:var(--t3);">NDA/BLA Numbers:</span> <b style="color:var(--blue); font-family:'JetBrains Mono';">${(lbl.application_numbers || []).join(', ') || 'N/A'}</b></div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">FAERS Safety Profile</div>
+          <div style="font-size:14px; margin-bottom:16px;">
+            Total Cases: <b>${(safety.total || 0).toLocaleString()}</b><br>
+            Serious Adverse Events: <b style="color:var(--red);">${(safety.serious || 0).toLocaleString()}</b> (${safety.serious_percentage || 0}%)
+          </div>
+          <div class="side-sec-title">Top Reported Adverse Reactions</div>
+          ${(safety.top_reactions || []).slice(0, 6).map(r => `
+            <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:8px; color:var(--t2);">
+              <span>${r.term}</span>
+              <span style="font-family:'JetBrains Mono'; font-weight:700; color:var(--t1);">${r.count.toLocaleString()}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Render PubMed Tab
+function renderPubMed(pubmed) {
+  const container = document.getElementById('pubmed-container');
+  if (!pubmed || !pubmed.papers || !pubmed.papers.length) {
+    container.innerHTML = `<div class="empty-view"><div>No peer-reviewed papers retrieved for this query.</div></div>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <div style="margin-bottom:24px; display:flex; gap:16px;">
+      <div class="kpi-card" style="flex:1; --kpi-bar: var(--blue);">
+        <div class="kpi-val" style="color:var(--blue);">${(pubmed.total_papers || 0).toLocaleString()}</div>
+        <div class="kpi-lbl">Total PubMed Publications</div>
+      </div>
+      <div class="kpi-card" style="flex:1; --kpi-bar: var(--grn);">
+        <div class="kpi-val" style="color:var(--grn);">${(pubmed.clinical_trial_papers || 0).toLocaleString()}</div>
+        <div class="kpi-lbl">Clinical Trial Specific Papers</div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      ${pubmed.papers.map(p => `
+        <div class="paper-item">
+          <div class="paper-hdr">
+            <span class="paper-journal">${p.journal} &bull; ${p.pub_date}</span>
+            ${p.is_high_impact ? `<span class="badge-hi">★ High Impact Journal</span>` : ''}
+          </div>
+          <a href="${p.url}" target="_blank" style="font-size:15px; font-weight:700; color:var(--t1); text-decoration:none; line-height:1.45;">
+            ${p.title} ↗
+          </a>
+          <div style="font-size:13px; color:var(--t3); margin-top:6px;">
+            ${p.authors} &bull; PMID: <span style="font-family:'JetBrains Mono'; color:var(--blue); font-weight:700;">${p.pmid}</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// Render Forecasting Tab
+function renderForecasting(fc) {
+  const container = document.getElementById('forecasting-container');
+  if (!fc || !fc.milestones || !fc.milestones.length) {
+    container.innerHTML = `<div class="empty-view"><div>No milestone dates available for forecasting.</div></div>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="fc-summary-hero">
+      <div>
+        <div class="fc-hero-title">Commercial Launch & Regulatory Milestone Radar</div>
+        <div class="fc-hero-sub">
+          Analyzed <b>${fc.total_analyzed}</b> Phase 3/Pivotal studies &bull; <b>${fc.upcoming_readouts}</b> upcoming readouts
+        </div>
+      </div>
+      <div class="fc-hero-launch-badge">
+        <div class="fc-hero-launch-tag">Earliest Commercial Launch</div>
+        <div class="fc-hero-launch-val">${fc.earliest_projected_launch}</div>
+      </div>
+    </div>
+
+    ${fc.milestones.map(m => `
+      <div class="timeline-card">
+        <div class="tl-header-row">
+          <div style="display:flex; align-items:center;">
+            <span class="tl-nct-badge">${m.nct_id}</span>
+            <span class="tl-study-name">${m.title}</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="badge badge-phase">${m.phase}</span>
+            <span class="tl-horizon-badge">${m.time_horizon}</span>
+          </div>
+        </div>
+
+        <div class="tl-track-container">
+          <div class="tl-track-line"></div>
+          <div class="tl-track-steps">
+            <div class="tl-step ${m.is_completed ? 'done' : 'active'}">
+              <div class="tl-step-node">${m.is_completed ? '✓' : '1'}</div>
+              <div class="tl-step-lbl">Primary Completion</div>
+              <div class="tl-step-date">${m.pcd_formatted}</div>
+            </div>
+
+            <div class="tl-step ${m.is_completed ? 'done' : ''}">
+              <div class="tl-step-node">2</div>
+              <div class="tl-step-lbl">Topline Readout</div>
+              <div class="tl-step-date">${m.topline_readout}</div>
+            </div>
+
+            <div class="tl-step">
+              <div class="tl-step-node">3</div>
+              <div class="tl-step-lbl">Filing (NDA/BLA)</div>
+              <div class="tl-step-date">${m.regulatory_filing}</div>
+            </div>
+
+            <div class="tl-step">
+              <div class="tl-step-node">4</div>
+              <div class="tl-step-lbl">PDUFA Approval</div>
+              <div class="tl-step-date">${m.pdufa_standard}</div>
+            </div>
+
+            <div class="tl-step launch">
+              <div class="tl-step-node">★</div>
+              <div class="tl-step-lbl" style="color:var(--grn);">Commercial Launch</div>
+              <div class="tl-step-date">${m.commercial_launch}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('')}
+  `;
+}
+
+// Head-to-Head Comparison Execution
+async function executeComparison() {
+  const drugA = document.getElementById('comp-drug-a').value.trim();
+  const drugB = document.getElementById('comp-drug-b').value.trim();
+  if (!drugA || !drugB) {
+    alert("Please enter both Drug A and Drug B names for comparison.");
+    return;
+  }
+
+  document.getElementById('empty-state').style.display = 'none';
+  document.getElementById('loading-state').style.display = 'flex';
+  document.getElementById('loading-label').textContent = `Running Head-to-Head Comparison: ${drugA} vs. ${drugB}...`;
+
+  try {
+    const res = await fetch(`/api/compare?drug_a=${encodeURIComponent(drugA)}&drug_b=${encodeURIComponent(drugB)}`);
+    const compData = await res.json();
+
+    renderComparisonMatrix(compData, drugA, drugB);
+
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('btn-tab-compare').style.display = 'inline-block';
+    document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('btn-tab-compare').classList.add('active');
+    document.getElementById('tab-compare').classList.add('active');
+  } catch (e) {
+    document.getElementById('loading-state').style.display = 'none';
+    alert("Error executing comparison: " + e.message);
+  }
+}
+
+function renderComparisonMatrix(data, nameA, nameB) {
+  const container = document.getElementById('compare-container');
+  const matrix = data.matrix || [];
+  const effTable = data.efficacy_benchmarks || [];
+
+  container.innerHTML = `
+    <div style="margin-bottom:20px;">
+      <h2 style="font-size:22px; color:var(--t1); font-weight:800;">
+        Competitive Intelligence Matrix: <span style="color:var(--blue);">${nameA}</span> vs. <span style="color:var(--amber);">${nameB}</span>
+      </h2>
+    </div>
+
+    <!-- GENERAL MATRIX TABLE -->
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th style="width:32%;">Analytical Dimension</th>
+          <th style="color:var(--blue); width:28%; font-size:13px;">${nameA}</th>
+          <th style="color:var(--amber); width:28%; font-size:13px;">${nameB}</th>
+          <th style="width:12%;">Advantage</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${matrix.map(row => `
+          <tr>
+            <td style="font-weight:700; color:var(--t1); font-size:14px;">${row.dimension}</td>
+            <td style="font-size:14px; font-weight:600; color:var(--t2);">${row.drug_a}</td>
+            <td style="font-size:14px; font-weight:600; color:var(--t2);">${row.drug_b}</td>
+            <td class="comp-advantage" style="font-size:13px;">
+              ${row.advantage !== 'N/A' ? `✓ ${row.advantage}` : '<span style="color:var(--t3);">Equal / N/A</span>'}
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+
+    <!-- EFFICACY BENCHMARKS TABLE (FEATURE 6) -->
+    <div style="margin:28px 0 14px 0;">
+      <h3 style="font-size:18px; color:var(--t1); font-weight:800; display:flex; align-items:center; gap:8px;">
+        <span>🎯 Primary Endpoint Clinical Efficacy Benchmarks (Head-to-Head)</span>
+      </h3>
+      <div style="font-size:13px; color:var(--t3); margin-top:4px;">
+        Extracted from Registrational Trial Endpoints & FDA Clinical Studies (Section 14)
+      </div>
+    </div>
+
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th style="width:25%;">Clinical Endpoint</th>
+          <th style="color:var(--blue); width:25%; font-size:13px;">${nameA} Result</th>
+          <th style="color:var(--amber); width:25%; font-size:13px;">${nameB} Result</th>
+          <th style="width:25%;">Efficacy Edge / Advantage</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${effTable.length ? effTable.map(r => `
+          <tr>
+            <td style="font-weight:700; color:var(--t1); font-size:14px;">
+              ${r.endpoint}<br>
+              <span style="font-size:12px; color:var(--t3); font-weight:500;">${r.trial_a} / ${r.trial_b}</span>
+            </td>
+            <td style="font-size:14px; font-weight:600; color:var(--blue);">${r.drug_a_val}</td>
+            <td style="font-size:14px; font-weight:600; color:var(--amber);">${r.drug_b_val}</td>
+            <td class="comp-advantage" style="font-size:13px;">
+              ${r.advantage !== 'Comparable' ? `⭐ ${r.advantage}` : '<span style="color:var(--t3);">Comparable Efficacy</span>'}
+            </td>
+          </tr>
+        `).join('') : `<tr><td colspan="4" style="text-align:center; padding:24px; color:var(--t3); font-size:14px;">No head-to-head clinical endpoints extracted.</td></tr>`}
+      </tbody>
+    </table>
+  `;
+}
+
+// 1-Click Excel Download
+function downloadExcel() {
+  if (!currentDrug) return;
+  const url = `/api/export-excel?drug=${encodeURIComponent(currentDrug)}`;
+  window.open(url, '_blank');
+}
+
+// 1-Click Executive PDF Brief
+function exportExecutivePDF() {
+  if (!currentDrug) return;
+  window.open(`/executive-brief?drug=${encodeURIComponent(currentDrug)}&auto_print=true`, '_blank');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>PharmaPulse CI — Executive Intelligence Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --blue: #2563eb;
+  --t1: #0f172a;
+  --t2: #334155;
+  --t3: #64748b;
+  --b1: #cbd5e1;
+  --b2: #e2e8f0;
+  --grn: #059669;
+  --red: #e11d48;
+  --amber: #d97706;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: var(--t1);
+  background: #f1f5f9;
+  padding: 24px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Screen Action Bar */
+.action-bar {
+  max-width: 1080px;
+  margin: 0 auto 16px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: 1px solid var(--b1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.btn-print {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+.btn-print:hover { background: #1d4ed8; }
+
+/* Slide Format (Landscape Consulting Deck) */
+.slide-page {
+  width: 1080px;
+  min-height: 720px;
+  background: #ffffff;
+  margin: 0 auto 24px auto;
+  padding: 36px 40px;
+  border-radius: 12px;
+  border: 1px solid var(--b1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  position: relative;
+  page-break-after: always;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Slide Header */
+.slide-hdr {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid #2563eb;
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+}
+.slide-hdr-left h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.slide-hdr-left .subtitle {
+  font-size: 12px;
+  color: var(--t3);
+  font-weight: 600;
+  margin-top: 3px;
+}
+.slide-hdr-right {
+  text-align: right;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--t3);
+}
+
+/* KPI Strip */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.kpi-box {
+  background: #f8fafc;
+  border: 1px solid var(--b2);
+  border-radius: 8px;
+  padding: 12px 14px;
+  border-top: 3px solid var(--blue);
+}
+.kpi-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--t1);
+}
+.kpi-tag {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--t2);
+  margin-top: 2px;
+}
+
+/* Sections */
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 12px;
+  background: #2563eb;
+  border-radius: 2px;
+}
+
+/* Patent Banner */
+.patent-banner {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 14px;
+}
+.patent-runway-val {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #2563eb;
+}
+
+/* Tables */
+.brief-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  margin-bottom: 14px;
+  border: 1px solid var(--b2);
+}
+.brief-table th, .brief-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--b2);
+}
+.brief-table th {
+  background: #f1f5f9;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--t2);
+  font-weight: 700;
+}
+.brief-table tr:nth-child(even) td { background: #f8fafc; }
+
+/* Slide Footer */
+.slide-ftr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: var(--t3);
+  border-top: 1px solid var(--b2);
+  padding-top: 10px;
+  margin-top: 16px;
+}
+
+@media print {
+  body { background: #fff; padding: 0; }
+  .action-bar { display: none; }
+  .slide-page {
+    width: 100%;
+    min-height: auto;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+    padding: 24px 20px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="action-bar">
+  <div>
+    <b>PharmaPulse CI — Executive Intelligence Brief</b>
+    <span style="color:var(--t3); margin-left:10px;">Presentation Slide Format (2 Pages)</span>
+  </div>
+  <div>
+    <button class="btn-print" onclick="window.print()">🖨 Save as PDF / Print</button>
+  </div>
+</div>
+
+<!-- SLIDE 1: COMMERCIAL & REGULATORY BRIEF -->
+<div class="slide-page" id="slide-1">
+  <div>
+    <div class="slide-hdr">
+      <div class="slide-hdr-left">
+        <h1 id="brief-drug-name">Semaglutide (Ozempic / Wegovy)</h1>
+        <div class="subtitle" id="brief-subtitle">Executive Clinical & Commercial Pipeline Dossier</div>
+      </div>
+      <div class="slide-hdr-right">
+        <div>CONFIDENTIAL &bull; FOR INTERNAL STRATEGIC USE</div>
+        <div id="brief-date">Generated: September 2026</div>
+      </div>
+    </div>
+
+    <!-- KPI STRIP -->
+    <div class="kpi-row">
+      <div class="kpi-box">
+        <div class="kpi-num" id="kpi-total-trials">—</div>
+        <div class="kpi-tag">Total Registered Trials</div>
+      </div>
+      <div class="kpi-box" style="border-top-color:#e11d48;">
+        <div class="kpi-num" id="kpi-pivotal-trials" style="color:#e11d48;">—</div>
+        <div class="kpi-tag">Pivotal Registrational Studies</div>
+      </div>
+      <div class="kpi-box" style="border-top-color:#0284c7;">
+        <div class="kpi-num" id="kpi-patients" style="color:#0284c7;">—</div>
+        <div class="kpi-tag">Total Enrolled Patients</div>
+      </div>
+      <div class="kpi-box" style="border-top-color:#059669;">
+        <div class="kpi-num" id="kpi-recruiting" style="color:#059669;">—</div>
+        <div class="kpi-tag">Active Recruiting Studies</div>
+      </div>
+    </div>
+
+    <!-- PATENT & EXCLUSIVITY RADAR -->
+    <div class="section-title">Patent Cliff & Regulatory Exclusivity Radar (FDA Orange Book)</div>
+    <div class="patent-banner">
+      <div>
+        <div style="font-size:12px; font-weight:700; color:#0f172a; margin-bottom:4px;" id="patent-primary-num">
+          Primary Substance Patent: US 8,129,343
+        </div>
+        <div style="color:var(--t2); font-size:11px; margin-bottom:4px;" id="patent-dates-detail">
+          Patent Expiration: December 2031 &bull; Formulation Exclusivity: ~2033
+        </div>
+        <div style="color:var(--t3); font-size:11px;" id="patent-exclusivity-type">
+          Regulatory Exclusivity: Hatch-Waxman Statutory Protection
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:10px; font-weight:700; text-transform:uppercase; color:var(--blue);">Commercial Runway</div>
+        <div class="patent-runway-val" id="patent-runway-years">5.2 Years</div>
+        <div style="font-size:10px; color:var(--t3);">Until Generic Entry</div>
+      </div>
+    </div>
+
+    <!-- REGULATORY LABEL & INDICATIONS -->
+    <div class="section-title">FDA Regulatory Status & Approved Indications</div>
+    <div style="background:#f8fafc; border:1px solid var(--b2); border-radius:8px; padding:12px 14px; font-size:11px; line-height:1.6; margin-bottom:14px;" id="brief-indications">
+      Loading indications...
+    </div>
+
+    <!-- FORECASTING LAUNCH ROADMAP -->
+    <div class="section-title">Commercial Launch & Milestone Roadmap</div>
+    <table class="brief-table">
+      <thead>
+        <tr>
+          <th>NCT ID</th>
+          <th>Phase</th>
+          <th>Primary Completion (PCD)</th>
+          <th>Topline Readout</th>
+          <th>NDA/BLA Filing</th>
+          <th>PDUFA Decision</th>
+          <th>Est. Commercial Launch</th>
+        </tr>
+      </thead>
+      <tbody id="brief-forecasting-tbody">
+        <tr><td colspan="7">Loading milestones...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="slide-ftr">
+    <div>PharmaPulse CI &bull; Triangulating ClinicalTrials.gov v2, openFDA, and NCBI PubMed</div>
+    <div>Slide 1 of 2 &bull; Commercial & Regulatory Landscape</div>
+  </div>
+</div>
+
+<!-- SLIDE 2: CLINICAL EFFICACY & EVIDENCE BRIEF -->
+<div class="slide-page" id="slide-2">
+  <div>
+    <div class="slide-hdr">
+      <div class="slide-hdr-left">
+        <h1 id="brief-drug-name-2">Semaglutide</h1>
+        <div class="subtitle">Clinical Trial Evidence, Endpoint Efficacy Benchmarks & Safety Profile</div>
+      </div>
+      <div class="slide-hdr-right">
+        <div>CLINICAL EVIDENCE BRIEF</div>
+        <div>Slide 2 of 2</div>
+      </div>
+    </div>
+
+    <!-- EFFICACY BENCHMARKS -->
+    <div class="section-title">Primary Endpoint Efficacy Benchmarks</div>
+    <table class="brief-table">
+      <thead>
+        <tr>
+          <th style="width:25%;">Primary Clinical Endpoint</th>
+          <th style="width:18%;">Treatment Result</th>
+          <th style="width:22%;">Comparator / Placebo Delta</th>
+          <th style="width:18%;">Statistical Significance</th>
+          <th style="width:17%;">Flagship Trial / Source</th>
+        </tr>
+      </thead>
+      <tbody id="brief-efficacy-tbody">
+        <tr><td colspan="5">Loading efficacy benchmarks...</td></tr>
+      </tbody>
+    </table>
+
+    <!-- KEY PIVOTAL STUDIES -->
+    <div class="section-title">Key Pivotal / Registrational Studies</div>
+    <table class="brief-table">
+      <thead>
+        <tr>
+          <th>NCT ID</th>
+          <th>Phase</th>
+          <th>Sample Size</th>
+          <th>Lead Sponsor</th>
+          <th>Study Title</th>
+          <th>Primary Completion Date</th>
+        </tr>
+      </thead>
+      <tbody id="brief-pivotal-tbody">
+        <tr><td colspan="6">Loading pivotal trials...</td></tr>
+      </tbody>
+    </table>
+
+    <!-- SAFETY & ADVERSE EVENTS -->
+    <div class="section-title">Safety Profile & FAERS Adverse Events</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px;">
+      <div style="background:#f8fafc; border:1px solid var(--b2); border-radius:8px; padding:12px;" id="brief-safety-box">
+        <b>Adverse Reaction Cases:</b> Loading...
+      </div>
+      <div style="background:#fff1f2; border:1px solid #fecdd3; border-radius:8px; padding:12px; color:#9f1239;" id="brief-warning-box">
+        <b>Boxed Warnings:</b> None reported.
+      </div>
+    </div>
+
+    <!-- HIGH IMPACT PUBLICATIONS -->
+    <div class="section-title">Key Peer-Reviewed Publications (NEJM, Lancet, JAMA)</div>
+    <div id="brief-papers-list" style="font-size:11px; line-height:1.6;">
+      Loading publications...
+    </div>
+  </div>
+
+  <div class="slide-ftr">
+    <div>PharmaPulse CI &bull; 100% Verified Public Government Regulatory Data</div>
+    <div>Slide 2 of 2 &bull; Clinical Evidence & Safety</div>
+  </div>
+</div>
+
+<script>
+// Parse URL parameters and fetch drug data
+const urlParams = new URLSearchParams(window.location.search);
+const drug = urlParams.get('drug') || 'Semaglutide';
+const autoPrint = urlParams.get('auto_print') === 'true';
+
+async function loadBriefData() {
+  try {
+    const res = await fetch(`/api/dossier?drug=${encodeURIComponent(drug)}`);
+    const dossier = await res.json();
+    populateBrief(dossier);
+    if (autoPrint) {
+      setTimeout(() => window.print(), 800);
+    }
+  } catch (e) {
+    alert("Error loading dossier: " + e.message);
+  }
+}
+
+function populateBrief(d) {
+  const drugName = d.drug_name || drug;
+  document.getElementById('brief-drug-name').textContent = drugName.toUpperCase();
+  document.getElementById('brief-drug-name-2').textContent = drugName.toUpperCase();
+  document.getElementById('brief-subtitle').textContent = `Executive Clinical & Commercial Pipeline Brief: ${drugName.toUpperCase()}`;
+  document.getElementById('brief-date').textContent = "Generated: " + new Date().toLocaleDateString('en-US', {month:'long', year:'numeric'});
+
+  // KPIs
+  const stats = d.stats || {};
+  document.getElementById('kpi-total-trials').textContent = stats.total_trials || 0;
+  document.getElementById('kpi-pivotal-trials').textContent = stats.pivotal_trials || 0;
+  document.getElementById('kpi-patients').textContent = (stats.total_enrolled || 0).toLocaleString();
+  document.getElementById('kpi-recruiting').textContent = stats.recruiting_trials || 0;
+
+  // Patent
+  const pat = d.patent || {};
+  document.getElementById('patent-primary-num').textContent = `Primary Substance Patent: ${pat.primary_patent || 'Not Reported'}`;
+  document.getElementById('patent-dates-detail').textContent = `Patent Expiration: ${pat.patent_expiry_formatted || 'N/A'} • Status: ${pat.status_label || 'Active'}`;
+  document.getElementById('patent-exclusivity-type').textContent = `Regulatory Exclusivity: ${pat.exclusivity_type || 'Standard Hatch-Waxman'} (${pat.patent_assignee || 'Sponsor'})`;
+  document.getElementById('patent-runway-years').textContent = (pat.runway_years || 0) + " Years";
+
+  // FDA
+  const lbl = (d.fda || {}).label || {};
+  document.getElementById('brief-indications').textContent = lbl.indications_and_usage ? lbl.indications_and_usage.substring(0, 450) + "..." : "No approved US FDA label found for this exact name (Investigational pipeline asset).";
+
+  // Forecasting
+  const milestones = (d.forecasting || {}).milestones || [];
+  const fcBody = document.getElementById('brief-forecasting-tbody');
+  if (milestones.length) {
+    fcBody.innerHTML = milestones.slice(0, 4).map(m => `
+      <tr>
+        <td><b>${m.nct_id}</b></td>
+        <td>${m.phase}</td>
+        <td>${m.pcd_formatted || 'N/A'}</td>
+        <td>${m.topline_readout || 'TBD'}</td>
+        <td>${m.regulatory_filing || 'TBD'}</td>
+        <td>${m.pdufa_standard || 'TBD'}</td>
+        <td style="color:#059669; font-weight:700;">${m.commercial_launch || 'TBD'}</td>
+      </tr>
+    `).join('');
+  } else {
+    fcBody.innerHTML = `<tr><td colspan="7">No milestone dates available.</td></tr>`;
+  }
+
+  // Efficacy
+  const effList = d.efficacy || [];
+  const effBody = document.getElementById('brief-efficacy-tbody');
+  if (effList.length) {
+    effBody.innerHTML = effList.map(e => `
+      <tr>
+        <td><b>${e.endpoint}</b></td>
+        <td style="color:#2563eb; font-weight:700;">${e.treatment_value}</td>
+        <td>${e.comparator_value || e.delta}</td>
+        <td>${e.stat_sig || 'Reported'}</td>
+        <td>${e.flagship_trial || 'Clinical Study'}</td>
+      </tr>
+    `).join('');
+  } else {
+    effBody.innerHTML = `<tr><td colspan="5">No quantitative efficacy numbers available.</td></tr>`;
+  }
+
+  // Key Pivotal Trials
+  const trials = d.trials || [];
+  const pivotal = trials.filter(t => t.is_pivotal).slice(0, 4);
+  const pivBody = document.getElementById('brief-pivotal-tbody');
+  if (pivotal.length) {
+    pivBody.innerHTML = pivotal.map(p => `
+      <tr>
+        <td><b>${p.nct_id}</b></td>
+        <td>${p.phase}</td>
+        <td>${(p.enrollment || 0).toLocaleString()} pts</td>
+        <td>${p.sponsor || 'Industry'}</td>
+        <td>${p.title.substring(0, 75)}...</td>
+        <td>${p.primary_completion_date || 'N/A'}</td>
+      </tr>
+    `).join('');
+  } else {
+    pivBody.innerHTML = `<tr><td colspan="6">No Phase 3 pivotal trials found.</td></tr>`;
+  }
+
+  // Safety
+  const safety = (d.fda || {}).safety || {};
+  document.getElementById('brief-safety-box').innerHTML = `
+    <b>Total FAERS Adverse Reports:</b> ${(safety.total || 0).toLocaleString()}<br>
+    <b>Serious Cases:</b> ${(safety.serious || 0).toLocaleString()} (${safety.serious_percentage || 0}%)<br>
+    <b>Top Reaction:</b> ${(safety.top_reactions && safety.top_reactions[0]) ? safety.top_reactions[0].term : 'None reported'}
+  `;
+  if (lbl.has_boxed_warning) {
+    document.getElementById('brief-warning-box').innerHTML = `
+      <b>FDA Boxed Warning:</b> ${lbl.boxed_warning.substring(0, 160)}...
+    `;
+  } else {
+    document.getElementById('brief-warning-box').style.background = "#f8fafc";
+    document.getElementById('brief-warning-box').style.borderColor = "#e2e8f0";
+    document.getElementById('brief-warning-box').style.color = "#334155";
+    document.getElementById('brief-warning-box').innerHTML = `<b>Boxed Warnings:</b> No black box warning reported.`;
+  }
+
+  // Publications
+  const papers = (d.pubmed || {}).papers || [];
+  const papersDiv = document.getElementById('brief-papers-list');
+  if (papers.length) {
+    papersDiv.innerHTML = papers.slice(0, 3).map(p => `
+      <div style="margin-bottom:6px;">
+        <b>${p.journal} (${p.pub_date}):</b> ${p.title} (${p.authors}) &bull; PMID: ${p.pmid}
+      </div>
+    `).join('');
+  } else {
+    papersDiv.innerHTML = "No PubMed publications retrieved.";
+  }
+}
+
+window.onload = loadBriefData;
+</script>
+</body>
+</html>
